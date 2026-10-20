@@ -1,0 +1,2080 @@
+<html lang="bn"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Directory - Smart ERP</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    /* LOADING SCREEN STYLES */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #0f172a;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      transition: opacity 0.5s ease;
+    }
+
+    .loader-box {
+      width: 350px;
+      text-align: center;
+    }
+
+    .loader-box h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 12px;
+      background: #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      border: 1px solid #334155;
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #38bdf8);
+      border-radius: 6px;
+      transition: width 0.05s linear;
+    }
+
+    .progress-percentage {
+      font-size: 18px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    #download-section {
+      display: none;
+      margin-top: 20px;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      height: 70px;
+      background: #ffffff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      font-size: 20px;
+      color: #2563eb;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+
+    .menu-btn:hover {
+      background: #eff6ff;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-icon-link {
+      position: relative;
+      color: #64748b;
+      font-size: 18px;
+      text-decoration: none;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .topbar-icon-link:hover {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: #ef4444;
+      color: white;
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 50%;
+    }
+
+    .profile-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #0f172a;
+    }
+
+    .profile-link img {
+      height: 38px;
+      width: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .profile-info .name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .profile-info .role {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 85px;
+      left: 20px;
+      width: 250px;
+      height: calc(100vh - 105px);
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: left 0.3s ease;
+    }
+
+    .brand {
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #2563eb;
+      text-align: center;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .menu-area {
+      padding: 15px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .menu-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin: 12px 0 6px 10px;
+    }
+
+    .menu-area a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      margin-bottom: 4px;
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 13px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-area a i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .menu-area a:hover,
+    .menu-area a.active {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    /* CONTENT AREA */
+    .content {
+      margin-left: 290px;
+      padding: 95px 25px 40px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    /* STUDENT STATS */
+    .student-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .stat-info h4 {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+
+    .stat-info .num {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* CONTROL PANEL */
+    .table-controls {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 16px 16px 0 0;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .search-input-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      margin-left: 8px;
+      font-size: 13px;
+    }
+
+    .filter-options {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-options select {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 13px;
+      color: #0f172a;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* TABLE SECTION */
+    .table-card {
+      background: #ffffff;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1800px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    th {
+      color: #64748b;
+      background: #f8fafc;
+      font-weight: 600;
+    }
+
+    .student-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .student-cell img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .student-name {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .student-email {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-active { background: #dcfce7; color: #15803d; }
+    .status-inactive { background: #fee2e2; color: #b91c1c; }
+
+    .action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      margin-right: 2px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn-view { background: #eff6ff; color: #2563eb; }
+    .btn-edit { background: #fef9c3; color: #a16207; }
+    .btn-delete { background: #fee2e2; color: #b91c1c; }
+    .btn-print { background: #f1f5f9; color: #475569; }
+
+    .fee-grid-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 240px;
+    }
+
+    .fee-grid-header {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #2563eb;
+      padding: 5px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 11px;
+      display: grid;
+      grid-template-columns: 65px 1fr 1fr 1fr;
+      text-align: center;
+    }
+
+    .fee-grid-row {
+      display: grid;
+      grid-template-columns: 65px 1fr 1fr 1fr;
+      padding: 4px 8px;
+      border-bottom: 1px dashed #f1f5f9;
+      font-size: 11px;
+      text-align: center;
+      align-items: center;
+    }
+
+    .fee-grid-row:last-child {
+      border-bottom: none;
+    }
+
+    .fee-col-label {
+      font-weight: 600;
+      color: #0f172a;
+      text-align: left;
+    }
+
+    /* PAGINATION SECTION */
+    .pagination-wrapper {
+      background: #ffffff;
+      padding: 14px 20px;
+      border-top: 1px solid #f1f5f9;
+      border-radius: 0 0 16px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pagination-info {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .pagination-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .page-btn {
+      padding: 6px 12px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .page-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      color: #0f172a;
+    }
+
+    .close-modal {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .form-group input[type="file"] {
+      padding: 6px;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: #2563eb;
+    }
+
+    .preview-container {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-container img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .profile-details {
+      text-align: center;
+    }
+
+    .profile-details img {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      object-fit: cover;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .detail-item {
+      background: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .detail-item strong {
+      font-size: 13px;
+      color: #0f172a;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1050;
+    }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 0 15px; }
+      .sidebar { left: -280px; top: 75px; height: calc(100vh - 85px); }
+      .sidebar.active { left: 15px; }
+      .content { margin-left: 0; padding: 85px 15px 20px; }
+      .overlay.show { display: block; }
+      .profile-info { display: none; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .search-input-box { max-width: 100%; }
+      .filter-options { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen" style="opacity: 0; display: none;">
+    <div class="loader-box">
+      <h2>Smart ERP System Loading...</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-fill" style="width: 100%;"></div>
+      </div>
+      <div class="progress-percentage" id="progress-text">100%</div>
+    </div>
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="menu-btn" onclick="openMenu()">
+        <i class="fa fa-bars"></i>
+      </div>
+      <div class="logo">🏫 Smart ERP</div>
+    </div>
+
+    <div class="profile">
+      <a onclick="openAddModal()" class="topbar-icon-link" title="Add Student">
+        <i class="fa fa-user-plus"></i>
+      </a>
+
+      <a href="#" class="topbar-icon-link" title="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        <span class="badge">3</span>
+      </a>
+
+      <a href="#" class="profile-link">
+        <img src="https://i.pravatar.cc/100" alt="Profile Picture">
+        <div class="profile-info">
+          <span class="name">Admin User</span>
+          <span class="role">Headmaster</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="brand">🎓 Management</div>
+    <div class="menu-area">
+      <div class="menu-title">Main</div>
+      <a href="#"><i class="fa fa-chart-pie"></i> Dashboard</a>
+      
+      <div class="menu-title">Academic</div>
+      <a href="student.html" class="active"><i class="fa fa-user-graduate"></i> Students</a>
+      <a href="fees.html"><i class="fa fa-file-invoice-dollar"></i> Fees</a>
+      <a href="#"><i class="fa fa-chalkboard-user"></i> Teachers</a>
+      <a href="#"><i class="fa fa-school"></i> Classes</a>
+
+      <div class="menu-title">Admin</div>
+      <a href="#"><i class="fa fa-gear"></i> Settings</a>
+      <a href="#"><i class="fa fa-right-from-bracket"></i> Logout</a>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+  <!-- CONTENT AREA -->
+  <div class="content">
+    
+    <!-- STUDENTS TAB -->
+    <div id="tab-students" class="tab-content">
+      <div class="page-header">
+        <div>
+          <h1>Student Directory</h1>
+          <p style="color: #64748b; font-size: 12px;">সেশন, চুক্তি ফি এবং বকেয়া হিসাব ব্যবস্থাপনা</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="openAddModal()">
+            <i class="fa fa-user-plus"></i> নতুন শিক্ষার্থী
+          </button>
+        </div>
+      </div>
+
+      <!-- STUDENT STATS -->
+      <div class="student-stats">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #eff6ff; color: #2563eb;"><i class="fa fa-users"></i></div>
+          <div class="stat-info">
+            <h4>মোট শিক্ষার্থী</h4>
+            <div class="num" id="total-count">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;"><i class="fa fa-user-check"></i></div>
+          <div class="stat-info">
+            <h4>সক্রিয় (Active)</h4>
+            <div class="num" id="active-count">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="fa fa-file-invoice-dollar"></i></div>
+          <div class="stat-info">
+            <h4>মোট চুক্তি ফি</h4>
+            <div class="num" id="total-contract-amount" style="font-size: 15px;">৳ 0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fee2e2; color: #dc2626;"><i class="fa fa-wallet"></i></div>
+          <div class="stat-info">
+            <h4>মোট বকেয়া</h4>
+            <div class="num" id="total-due-amount" style="font-size: 15px;">৳ 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL PANEL -->
+      <div class="table-controls">
+        <div>
+          <button class="btn-primary" onclick="printAllStudentsTable()" style="background: #0f172a;">
+            <i class="fa fa-print"></i> সব শিক্ষার্থী প্রিন্ট করুন
+          </button>
+        </div>
+
+        <div class="search-input-box">
+          <i class="fa fa-search" style="color: #94a3b8;"></i>
+          <input type="text" id="searchInput" placeholder="নাম বা ইমেইল দিয়ে খুঁজুন..." oninput="handleSearch()">
+        </div>
+
+        <div class="filter-options">
+          <div>
+            <label style="font-size: 12px; color: #64748b;">সেশন ফিল্টার:</label>
+            <select id="sessionFilterSelect" onchange="handleSessionFilter()">
+              <option value="all">সকল সেশন</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: #64748b;">প্রোগ্রাম ফিল্টার:</label>
+            <select id="programFilterSelect" onchange="handleProgramFilter()">
+              <option value="all">সকল প্রোগ্রাম</option>
+              <option value="bsc in nursing science (basic)">bsc in nursing science (basic)</option>
+              <option value="bsc in nursing science (post basic)">bsc in nursing science (post basic)</option>
+              <option value="diploma in nursing science and midwifery">diploma in nursing science and midwifery</option>
+              <option value="diploma in midwifery">diploma in midwifery</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: #64748b;">ব্যাচ ফিল্টার:</label>
+            <select id="batchFilterSelect" onchange="handleBatchFilter()">
+              <option value="all">সকল ব্যাচ</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: #64748b;">ইয়ার ফিল্টার:</label>
+            <select id="yearFilterSelect" onchange="handleYearFilter()">
+              <option value="all">সকল ইয়ার</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: #64748b;">দেখান:</label>
+            <select id="itemsPerPageSelect" onchange="handleItemsPerPageChange()">
+              <option value="10">১০ জন</option>
+              <option value="20" selected="">২০ জন</option>
+              <option value="50">৫০ জন</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDENT TABLE -->
+      <div class="table-card" id="student-printable-area">
+        <table>
+          <thead>
+            <tr>
+              <th>সিরিয়াল</th>
+              <th>নাম (Name)</th>
+              <th>সেশন (Session)</th>
+              <th>প্রোগ্রাম (Program)</th>
+              <th>ব্যাচ (Batch)</th>
+              <th>ইয়ার (Year)</th>
+              <th>রোল (Roll)</th>
+              <th>ফোন (Phone)</th>
+              <th>অভিভাবকের ফোন</th>
+              <th>ঠিকানা</th>
+              <th>মোট ফি</th>
+              <th>পরিশোধ</th>
+              <th>বকেয়া</th>
+              <th>এডমিন ফি</th>
+              <th>রিসিভ</th>
+              <th>বকেয়া ফি</th>
+              <th>টিউশন ফি (ইয়ারভিত্তিক কলাম হিসাব)</th>
+              <th>অন্যান্য ফি (খাতওয়ারী কলাম হিসাব)</th>
+              <th>স্ট্যাটাস</th>
+              <th class="no-print">অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody id="student-table-body">
+            <!-- Dynamic Data -->
+          </tbody>
+        </table>
+
+        <!-- PAGINATION CONTROLS -->
+        <div class="pagination-wrapper no-print">
+          <div class="pagination-info" id="paginationInfo">দেখাচ্ছে 0 জন</div>
+          <div class="pagination-buttons" id="paginationButtons"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. VIEW MODAL -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Student Details &amp; Accounts</h3>
+        <button class="close-modal" onclick="closeModal('viewModal')"><i class="fa fa-times"></i></button>
+      </div>
+      <div class="modal-body profile-details" id="single-student-print-area">
+        <img id="view-img" alt="Student">
+        <h3 id="view-name">---</h3>
+        <p id="view-email" style="color: #64748b; font-size: 12px;">---</p>
+        
+        <div class="detail-grid">
+          <div class="detail-item"><span>সিরিয়াল নম্বর</span><strong id="view-sl">---</strong></div>
+          <div class="detail-item"><span>সেশন</span><strong id="view-session">---</strong></div>
+          <div class="detail-item"><span>প্রোগ্রাম</span><strong id="view-program">---</strong></div>
+          <div class="detail-item"><span>ইয়ার (Year)</span><strong id="view-year">---</strong></div>
+          <div class="detail-item"><span>ব্যাচ</span><strong id="view-batch">---</strong></div>
+          <div class="detail-item"><span>রোল আইডি</span><strong id="view-roll">---</strong></div>
+          <div class="detail-item"><span>অভিভাবক</span><strong id="view-guardian">---</strong></div>
+          <div class="detail-item"><span>ফোন নম্বর</span><strong id="view-phone">---</strong></div>
+          <div class="detail-item"><span>অভিভাবকের ফোন</span><strong id="view-guardian-phone">---</strong></div>
+          <div class="detail-item" style="grid-column: span 2;"><span>ঠিকানা</span><strong id="view-address">---</strong></div>
+          <div class="detail-item"><span>চুক্তিকৃত মোট ফি</span><strong id="view-contract-fee" style="color: #d97706;">---</strong></div>
+          <div class="detail-item"><span>মোট ফি (Total Fee)</span><strong id="view-total-fee" style="color: #2563eb;">---</strong></div>
+          <div class="detail-item"><span>পরিশোধিত ফি</span><strong id="view-paid-fee" style="color: #16a34a;">---</strong></div>
+          <div class="detail-item"><span>ভর্তি ফি</span><strong id="view-admission-fee" style="color: #0f172a;">---</strong></div>
+          <div class="detail-item"><span>1st Year টিউশন ফি</span><strong id="view-tui-1" style="color: #0f172a;">---</strong></div>
+          <div class="detail-item"><span>2nd Year টিউশন ফি</span><strong id="view-tui-2" style="color: #0f172a;">---</strong></div>
+          <div class="detail-item" id="view-tui-3-container"><span>3rd Year টিউশন ফি</span><strong id="view-tui-3" style="color: #0f172a;">---</strong></div>
+          <div class="detail-item" id="view-tui-4-container"><span>4th Year টিউশন ফি</span><strong id="view-tui-4" style="color: #0f172a;">---</strong></div>
+          <div class="detail-item" style="grid-column: span 2;"><span>বকেয়া ফি (Due)</span><strong id="view-due-fee" style="color: #dc2626;">---</strong></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="printSingleStudent()"><i class="fa fa-print"></i> এই শিক্ষার্থীর তথ্য প্রিন্ট করুন</button>
+        <button class="btn-secondary" onclick="closeModal('viewModal')">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. EDIT / ADD MODAL -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="form-title">Edit Student Information</h3>
+        <button class="close-modal" onclick="closeModal('formModal')"><i class="fa fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="studentForm" onsubmit="saveStudent(event)">
+          <input type="hidden" id="student-id">
+          
+          <div class="form-group">
+            <label>ছবি আপলোড করুন (Upload Photo)</label>
+            <input type="file" id="input-img-file" accept="image/*" onchange="previewImage(event)">
+            <input type="hidden" id="input-img-base64">
+            <div class="preview-container">
+              <img id="image-preview" src="https://i.pravatar.cc/100" alt="Preview">
+              <span style="font-size: 11px; color: #64748b;">নির্বাচিত ছবি</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>শিক্ষার্থীর নাম (Name)</label>
+            <input type="text" id="input-name" required="">
+          </div>
+          
+          <div class="form-group">
+            <label>ইমেইল (Email)</label>
+            <input type="email" id="input-email" required="">
+          </div>
+
+          <div class="form-group">
+            <label>ফোন নম্বর (Phone)</label>
+            <input type="text" id="input-phone" required="">
+          </div>
+
+          <div class="form-group">
+            <label>রোল নম্বর (Roll)</label>
+            <input type="text" id="input-roll" required="">
+          </div>
+
+          <div class="form-group">
+            <label>অভিভাবকের নাম (Guardian)</label>
+            <input type="text" id="input-guardian" required="">
+          </div>
+
+          <div class="form-group">
+            <label>অভিভাবকের ফোন নম্বর (Guardian Phone)</label>
+            <input type="text" id="input-guardian-phone" placeholder="অভিভাবকের ফোন নম্বর">
+          </div>
+
+          <div class="form-group">
+            <label>ঠিকানা (Address)</label>
+            <textarea id="input-address" rows="2" placeholder="শিক্ষার্থীর ঠিকানা"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>সেশন (Session)</label>
+            <select id="input-session" required=""></select>
+          </div>
+
+          <div class="form-group">
+            <label>প্রোগ্রাম নির্বাচন (Program)</label>
+            <select id="input-program" onchange="onProgramChange()" required="">
+              <option value="bsc in nursing science (basic)" data-years="4">bsc in nursing science (basic)</option>
+              <option value="bsc in nursing science (post basic)" data-years="2">bsc in nursing science (post basic)</option>
+              <option value="diploma in nursing science and midwifery" data-years="3">diploma in nursing science and midwifery</option>
+              <option value="diploma in midwifery" data-years="3">diploma in midwifery</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>ইয়ার (Year)</label>
+            <select id="input-year" required=""></select>
+          </div>
+
+          <div class="form-group">
+            <label>ব্যাচ</label>
+            <select id="input-batch" required=""></select>
+          </div>
+
+          <div class="form-group">
+            <label>মোট চুক্তি ফি (Total Contract Fee)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="input-contract-fee" placeholder="যেমন: ৩০০০০" oninput="validateAndUpdateFees()" style="flex: 1;" required="">
+              <button type="button" class="btn-primary" onclick="autoSplitFees()" style="white-space: nowrap; padding: 0 14px; font-size: 12px;"><i class="fa fa-calculator"></i> সমানভাবে ভাগ করুন (Auto-Split)</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ভর্তি ফি (Admission Fee)</label>
+            <input type="number" id="input-admission-fee" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" required="">
+          </div>
+
+          <div class="form-group">
+            <label>1st Year টিউশন ফি (1st Year Tuition Fee)</label>
+            <input type="number" id="input-tui-1" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" required="">
+          </div>
+
+          <div class="form-group">
+            <label>2nd Year টিউশন ফি (2nd Year Tuition Fee)</label>
+            <input type="number" id="input-tui-2" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" required="">
+          </div>
+
+          <div class="form-group" id="group-tui-3">
+            <label>3rd Year টিউশন ফি (3rd Year Tuition Fee)</label>
+            <input type="number" id="input-tui-3" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" required="">
+          </div>
+
+          <div class="form-group" id="group-tui-4">
+            <label>4th Year টিউশন ফি (4th Year Tuition Fee)</label>
+            <input type="number" id="input-tui-4" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" required="">
+          </div>
+
+          <div class="form-group" id="group-tui-5" style="display:none;">
+            <label>5th Year টিউশন ফি (5th Year Tuition Fee)</label>
+            <input type="number" id="input-tui-5" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" disabled="">
+          </div>
+
+          <div class="form-group" id="group-tui-6" style="display:none;">
+            <label>6th Year টিউশন ফি (6th Year Tuition Fee)</label>
+            <input type="number" id="input-tui-6" placeholder="যেমন: ১০০০০" oninput="validateAndUpdateFees()" disabled="">
+          </div>
+
+          <!-- অন্যান্য ফি (Other Fees) সংরক্ষণ ফিল্ড -->
+          <div class="form-group">
+            <label>অন্যান্য ফি / অতিরিক্ত ফি (Other Fees)</label>
+            <input type="number" id="input-other-fees" placeholder="যেমন: ৫০০" value="0">
+          </div>
+
+          <div class="form-group">
+            <label>যাচাইকরণ ও মোট ফি (Admission + Tuitions = Contract Fee)</label>
+            <input type="number" id="input-total-fee" readonly="" style="background: #e2e8f0; cursor: not-allowed; font-weight: bold; color: #2563eb;" placeholder="স্বয়ংক্রিয় যোগফল">
+            <small id="fee-validation-msg" style="color: #dc2626; font-size: 11px; display: block; margin-top: 3px;"></small>
+          </div>
+
+          <div class="form-group">
+            <label>স্ট্যাটাস (Status)</label>
+            <select id="input-status">
+              <option value="Active">সক্রিয় (Active)</option>
+              <option value="Inactive">নিষ্ক্রিয় (Inactive)</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="closeModal('formModal')">বাতিল</button>
+        <button type="button" class="btn-primary" onclick="document.getElementById('studentForm').requestSubmit()">সংরক্ষণ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. DELETE MODAL -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-card" style="max-width: 380px;">
+      <div class="modal-header">
+        <h3>ডিলিট নিশ্চিতকরণ</h3>
+        <button class="close-modal" onclick="closeModal('deleteModal')"><i class="fa fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px;">আপনি কি নিশ্চিত যে এই শিক্ষার্থীর তথ্য মুছে ফেলতে চান?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('deleteModal')">বাতিল</button>
+        <button class="btn-danger" id="confirm-delete-btn">ডিলিট করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // আপনার গুগল অ্যাপস স্ক্রিপ্টের Web App URL
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzK0NpwZK5Q6TwmivV5FM8jmH-inTxKB8uajFDuMCGcVtpb6uufSjmuhwCpZqP-6Ye6cg/exec";
+
+    let students = JSON.parse(localStorage.getItem('erp_students')) || [];
+    let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+
+    let currentPage = 1;
+    let itemsPerPage = 20;
+    let searchQuery = "";
+    let selectedSession = "all";
+    let selectedProgram = "all";
+    let selectedBatch = "all";
+    let selectedYear = "all";
+    let deleteId = null;
+
+    // লোকাল ডাটা দিয়ে ইনস্ট্যান্ট টেবিল রেন্ডার
+    if (students.length > 0) {
+      renderTable();
+    }
+
+    // ব্যাকগ্রাউন্ডে গুগল শিট থেকে ডাটা সিঙ্ক
+    function fetchStudentsFromSheet() {
+      fetch(`${GOOGLE_SHEET_URL}?action=read`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            students = data;
+            localStorage.setItem('erp_students', JSON.stringify(students));
+            recalculateAllPaidFees();
+            renderTable();
+          }
+        })
+        .catch(err => console.error("ডাটা সিঙ্ক করতে সমস্যা হয়েছে:", err));
+    }
+
+    function populateDropdowns() {
+      const sessionFilterSelect = document.getElementById("sessionFilterSelect");
+      const inputSession = document.getElementById("input-session");
+      const batchFilterSelect = document.getElementById("batchFilterSelect");
+      const inputBatch = document.getElementById("input-batch");
+      
+      const currentYear = new Date().getFullYear();
+      const endGenerationYear = currentYear + 5;
+
+      for (let year = 2015; year <= endGenerationYear; year++) {
+        const sessionName = `${year}-${year + 1}`;
+        
+        const optS1 = document.createElement("option");
+        optS1.value = sessionName;
+        optS1.innerText = sessionName;
+        sessionFilterSelect.appendChild(optS1);
+
+        const optS3 = document.createElement("option");
+        optS3.value = sessionName;
+        optS3.innerText = sessionName;
+        inputSession.appendChild(optS3);
+      }
+
+      for (let i = 1; i <= 100; i++) {
+        const batchName = `Batch ${i}`;
+        
+        const opt1 = document.createElement("option");
+        opt1.value = batchName;
+        opt1.innerText = batchName;
+        batchFilterSelect.appendChild(opt1);
+
+        const opt3 = document.createElement("option");
+        opt3.value = batchName;
+        opt3.innerText = batchName;
+        inputBatch.appendChild(opt3);
+      }
+
+      onProgramChange(); 
+    }
+
+    function onProgramChange() {
+      const programSelect = document.getElementById("input-program");
+      const selectedOption = programSelect.options[programSelect.selectedIndex];
+      
+      let totalYears = 4;
+      if (selectedOption && selectedOption.hasAttribute("data-years")) {
+        totalYears = parseInt(selectedOption.getAttribute("data-years"));
+      } else {
+        const progVal = programSelect.value;
+        if (progVal.includes("post basic")) totalYears = 2;
+        else if (progVal.includes("diploma")) totalYears = 3;
+        else if (progVal.includes("basic")) totalYears = 4;
+      }
+
+      const yearSelect = document.getElementById("input-year");
+      yearSelect.innerHTML = "";
+      const yearNames = ["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year", "6th Year"];
+      
+      for (let i = 0; i < totalYears; i++) {
+        const opt = document.createElement("option");
+        opt.value = yearNames[i];
+        opt.innerText = yearNames[i];
+        yearSelect.appendChild(opt);
+      }
+
+      for (let i = 1; i <= 6; i++) {
+        const groupEl = document.getElementById(`group-tui-${i}`);
+        const inputEl = document.getElementById(`input-tui-${i}`);
+        if (groupEl && inputEl) {
+          if (i <= totalYears) {
+            groupEl.style.display = "block";
+            inputEl.disabled = false;
+            inputEl.required = true;
+          } else {
+            groupEl.style.display = "none";
+            inputEl.value = 0;
+            inputEl.disabled = true;
+            inputEl.required = false;
+          }
+        }
+      }
+      validateAndUpdateFees();
+    }
+
+    function autoSplitFees() {
+      const contractFee = parseFloat(document.getElementById("input-contract-fee").value) || 0;
+      if (contractFee <= 0) {
+        alert("দয়া করে প্রথমে মোট চুক্তি ফি (Contract Fee) লিখুন!");
+        return;
+      }
+
+      const admissionFee = parseFloat(document.getElementById("input-admission-fee").value) || 0;
+      let remainingForTuition = contractFee - admissionFee;
+
+      if (remainingForTuition < 0) {
+        alert("ভর্তি ফি চুক্তি ফি এর বেশি হতে পারে না!");
+        return;
+      }
+
+      const programSelect = document.getElementById("input-program");
+      const selectedOption = programSelect.options[programSelect.selectedIndex];
+      let parts = 4;
+      if (selectedOption && selectedOption.hasAttribute("data-years")) {
+        parts = parseInt(selectedOption.getAttribute("data-years"));
+      } else {
+        if (programSelect.value.includes("post basic")) parts = 2;
+        else if (programSelect.value.includes("diploma")) parts = 3;
+        else if (programSelect.value.includes("basic")) parts = 4;
+      }
+
+      let splitAmount = Math.floor(remainingForTuition / parts);
+
+      for (let i = 1; i <= 6; i++) {
+        const inputEl = document.getElementById(`input-tui-${i}`);
+        if (i <= parts) {
+          if (i === parts) {
+            let sumSoFar = splitAmount * (parts - 1);
+            inputEl.value = remainingForTuition - sumSoFar;
+          } else {
+            inputEl.value = splitAmount;
+          }
+        } else {
+          inputEl.value = 0;
+        }
+      }
+
+      validateAndUpdateFees();
+    }
+
+    function validateAndUpdateFees() {
+      const contractFee = parseFloat(document.getElementById("input-contract-fee").value) || 0;
+      const admissionFee = parseFloat(document.getElementById("input-admission-fee").value) || 0;
+      
+      const tui1 = parseFloat(document.getElementById("input-tui-1").value) || 0;
+      const tui2 = parseFloat(document.getElementById("input-tui-2").value) || 0;
+      const tui3 = parseFloat(document.getElementById("input-tui-3").value) || 0;
+      const tui4 = parseFloat(document.getElementById("input-tui-4").value) || 0;
+      const tui5 = parseFloat(document.getElementById("input-tui-5").value) || 0;
+      const tui6 = parseFloat(document.getElementById("input-tui-6").value) || 0;
+
+      const calculatedTotal = admissionFee + tui1 + tui2 + tui3 + tui4 + tui5 + tui6;
+      document.getElementById("input-total-fee").value = calculatedTotal;
+
+      const msgEl = document.getElementById("fee-validation-msg");
+      if (calculatedTotal !== contractFee && contractFee > 0) {
+        msgEl.innerText = `সতর্কতা: ভর্তি ফি ও সব টিউশন ফি মিলে মোট (${calculatedTotal} টাকা) চুক্তি ফি (${contractFee} টাকা)-এর সমান হতে হবে!`;
+      } else {
+        msgEl.innerText = "";
+      }
+    }
+
+    function recalculateAllPaidFees() {
+      students.forEach(student => {
+        const eligiblePaidForStudent = invoices
+          .filter(inv => inv.studentId == student.id && (inv.feeType === "Admission Fee" || inv.feeType === "Tuition Fee" || inv.feeType === "Fee"))
+          .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+        student.paidFee = eligiblePaidForStudent;
+      });
+    }
+
+    function printAllStudentsTable() {
+      const processedData = getProcessedStudents();
+      let tableRowsHtml = "";
+
+      processedData.forEach((student, index) => {
+        const serialNum = index + 1;
+        const dueFee = Number(student.contractFee || 0) - Number(student.paidFee || 0);
+        const admissionFee = Number(student.admissionFee || 0);
+        
+        const paidAdmissionFee = invoices
+          .filter(inv => inv.studentId == student.id && (inv.feeType === "Admission Fee" || inv.feeType === "Fee"))
+          .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+          
+        const admDue = Math.max(0, admissionFee - paidAdmissionFee);
+        const paidFee = Number(student.paidFee || 0);
+        const studentInvoices = invoices.filter(inv => inv.studentId == student.id);
+
+        function getYearStats(yearName, fixedTui) {
+          let paidForYear = studentInvoices
+            .filter(inv => inv.year === yearName && (inv.feeType === "Tuition Fee" || inv.feeType === "Fee"))
+            .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+          let dueForYear = Math.max(0, fixedTui - paidForYear);
+          return { fixed: fixedTui, paid: paidForYear, due: dueForYear };
+        }
+
+        let y1 = getYearStats("1st Year", Number(student.tui1 || 0));
+        let y2 = getYearStats("2nd Year", Number(student.tui2 || 0));
+        let y3 = (student.tui3 > 0) ? getYearStats("3rd Year", Number(student.tui3 || 0)) : null;
+        let y4 = (student.tui4 > 0) ? getYearStats("4th Year", Number(student.tui4 || 0)) : null;
+
+        let tuitionSummary = `
+          <table style="width:100%; border-collapse:collapse; font-size:10px;">
+            <tr style="background:#f1f5f9;"><th style="border:1px solid #cbd5e1; padding:2px;">ইয়ার</th><th style="border:1px solid #cbd5e1; padding:2px;">নির্ধারিত</th><th style="border:1px solid #cbd5e1; padding:2px;">পরিশোধ</th><th style="border:1px solid #cbd5e1; padding:2px;">বকেয়া</th></tr>
+            <tr><td style="border:1px solid #cbd5e1; padding:2px;">1st Yr</td><td style="border:1px solid #cbd5e1; padding:2px;">৳${y1.fixed}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#16a34a">৳${y1.paid}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#dc2626">৳${y1.due}</td></tr>
+            <tr><td style="border:1px solid #cbd5e1; padding:2px;">2nd Yr</td><td style="border:1px solid #cbd5e1; padding:2px;">৳${y2.fixed}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#16a34a">৳${y2.paid}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#dc2626">৳${y2.due}</td></tr>
+        `;
+        if(y3 && y3.fixed > 0) {
+          tuitionSummary += `<tr><td style="border:1px solid #cbd5e1; padding:2px;">3rd Yr</td><td style="border:1px solid #cbd5e1; padding:2px;">৳${y3.fixed}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#16a34a">৳${y3.paid}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#dc2626">৳${y3.due}</td></tr>`;
+        }
+        if(y4 && y4.fixed > 0) {
+          tuitionSummary += `<tr><td style="border:1px solid #cbd5e1; padding:2px;">4th Yr</td><td style="border:1px solid #cbd5e1; padding:2px;">৳${y4.fixed}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#16a34a">৳${y4.paid}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#dc2626">৳${y4.due}</td></tr>`;
+        }
+        tuitionSummary += `</table>`;
+
+        const excludedFeeTypes = ["Admission Form", "Admission Fee", "Tuition Fee", "Fee"];
+        let otherFeesInvoices = studentInvoices.filter(inv => !excludedFeeTypes.includes(inv.feeType));
+        let otherFeesSummary = `<table style="width:100%; border-collapse:collapse; font-size:10px;">`;
+        if (otherFeesInvoices.length === 0 && (!student.otherFees || student.otherFees == 0)) {
+          otherFeesSummary += `<tr><td style="border:1px solid #cbd5e1; padding:2px; text-align:center; color:#94a3b8;">কোনো অতিরিক্ত ফি নেই</td></tr>`;
+        } else {
+          otherFeesSummary += `<tr style="background:#f1f5f9;"><th style="border:1px solid #cbd5e1; padding:2px;">খাত</th><th style="border:1px solid #cbd5e1; padding:2px;">পরিমাণ</th></tr>`;
+          if(student.otherFees && student.otherFees > 0) {
+            otherFeesSummary += `<tr><td style="border:1px solid #cbd5e1; padding:2px;">অন্যান্য ফি</td><td style="border:1px solid #cbd5e1; padding:2px; color:#16a34a; font-weight:bold;">৳${Number(student.otherFees).toLocaleString()}</td></tr>`;
+          }
+          let feeMap = {};
+          otherFeesInvoices.forEach(inv => {
+            feeMap[inv.feeType] = (feeMap[inv.feeType] || 0) + Number(inv.amount || 0);
+          });
+          for (let [fType, fAmt] of Object.entries(feeMap)) {
+            otherFeesSummary += `<tr><td style="border:1px solid #cbd5e1; padding:2px;">${fType}</td><td style="border:1px solid #cbd5e1; padding:2px; color:#16a34a; font-weight:bold;">৳${fAmt.toLocaleString()}</td></tr>`;
+          }
+        }
+        otherFeesSummary += `</table>`;
+
+        tableRowsHtml += `
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:6px; text-align:center;">${serialNum}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px;"><strong>${student.name}</strong><br><small style="color:#64748b">${student.email}</small></td>
+            <td style="border:1px solid #cbd5e1; padding:6px; text-align:center;">${student.session}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px;">${student.program}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; text-align:center;">${student.batch}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; text-align:center;">${student.year}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; text-align:center;">#${student.roll}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px;">${student.phone}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px;">${student.guardianPhone || 'দেওয়া হয়নি'}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px;">${student.address || 'দেওয়া হয়নি'}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; font-weight:bold; color:#2563eb;">৳ ${Number(student.contractFee || 0).toLocaleString()}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#16a34a; font-weight:bold;">৳ ${paidFee.toLocaleString()}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#dc2626; font-weight:bold;">৳ ${dueFee.toLocaleString()}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px;">৳ ${admissionFee.toLocaleString()}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#16a34a;">৳ ${paidAdmissionFee.toLocaleString()}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#dc2626;">৳ ${admDue.toLocaleString()}</td>
+            <td style="border:1px solid #cbd5e1; padding:4px;">${tuitionSummary}</td>
+            <td style="border:1px solid #cbd5e1; padding:4px;">${otherFeesSummary}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; text-align:center;">${student.status === 'Active' ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</td>
+          </tr>
+        `;
+      });
+
+      const printWindow = window.open('', '', 'height=800,width=1100');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Student Directory List - Smart ERP</title>
+            <style>
+              body { font-family: sans-serif; padding: 20px; color: #0f172a; }
+              h2 { text-align: center; color: #2563eb; margin-bottom: 5px; }
+              p { text-align: center; color: #64748b; margin-bottom: 20px; font-size: 13px; }
+              table { width: 100%; border-collapse: collapse; font-size: 11px; }
+              th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; vertical-align: middle; }
+              th { background: #f8fafc; color: #475569; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <h2>Smart ERP - Student Directory List</h2>
+            <p>সকল শিক্ষার্থীর তালিকা ও আর্থিক হিসাব প্রতিবেদন</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>সিরিয়াল</th>
+                  <th>নাম (Name)</th>
+                  <th>সেশন (Session)</th>
+                  <th>প্রোগ্রাম (Program)</th>
+                  <th>ব্যাচ (Batch)</th>
+                  <th>ইয়ার (Year)</th>
+                  <th>রোল (Roll)</th>
+                  <th>ফোন (Phone)</th>
+                  <th>অভিভাবকের ফোন</th>
+                  <th>ঠিকানা</th>
+                  <th>মোট ফি</th>
+                  <th>পরিশোধ</th>
+                  <th>বকেয়া</th>
+                  <th>এডমিন ফি</th>
+                  <th>রিসিভ</th>
+                  <th>বকেয়া ফি</th>
+                  <th>টিউশন ফি</th>
+                  <th>অন্যান্য ফি</th>
+                  <th>স্ট্যাটাস</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRowsHtml}
+              </tbody>
+            </table>
+            <script>
+              window.onload = function() { window.print(); window.close(); }
+            <\/script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function printSingleStudent() {
+      const modalBodyContent = document.getElementById("single-student-print-area").innerHTML;
+      const printWindow = window.open('', '', 'height=700,width=800');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Student Profile & Financial Report</title>
+            <style>
+              body { font-family: sans-serif; padding: 25px; color: #0f172a; }
+              .profile-details { text-align: center; }
+              .profile-details img { width: 85px; height: 85px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; }
+              .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; text-align: left; }
+              .detail-item { background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; }
+              .detail-item span { display: block; font-size: 11px; color: #64748b; }
+              .detail-item strong { font-size: 13px; color: #0f172a; }
+              h2 { text-align: center; color: #2563eb; margin-bottom: 20px; }
+            </style>
+          </head>
+          <body>
+            <h2>Smart ERP - Student Profile & Report</h2>
+            <div class="profile-details">
+              ${modalBodyContent}
+            </div>
+            <script>
+              window.onload = function() { window.print(); window.close(); }
+            <\/script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("image-preview").src = e.target.result;
+          document.getElementById("input-img-base64").value = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function saveStudent(e) {
+      e.preventDefault();
+      const id = document.getElementById("student-id").value;
+      
+      const contractFee = parseFloat(document.getElementById("input-contract-fee").value) || 0;
+      const admissionFee = parseFloat(document.getElementById("input-admission-fee").value) || 0;
+      const tui1 = parseFloat(document.getElementById("input-tui-1").value) || 0;
+      const tui2 = parseFloat(document.getElementById("input-tui-2").value) || 0;
+      const tui3 = parseFloat(document.getElementById("input-tui-3").value) || 0;
+      const tui4 = parseFloat(document.getElementById("input-tui-4").value) || 0;
+      const tui5 = parseFloat(document.getElementById("input-tui-5").value) || 0;
+      const tui6 = parseFloat(document.getElementById("input-tui-6").value) || 0;
+      const otherFees = parseFloat(document.getElementById("input-other-fees").value) || 0;
+      const program = document.getElementById("input-program").value;
+
+      const calculatedTotal = admissionFee + tui1 + tui2 + tui3 + tui4 + tui5 + tui6;
+
+      if (calculatedTotal !== contractFee) {
+        alert(`দয়া করে নিশ্চিত করুন যে ভর্তি ফি ও সকল ইয়ারের টিউশন ফি-এর যোগফল মোট চুক্তি ফি (${contractFee} টাকা)-এর সমান হয়!`);
+        return;
+      }
+
+      // সঠিক ছবি নিশ্চিতকরণ (নতুন ছবি বা আগের ছবি)
+      let finalImg = document.getElementById("input-img-base64").value;
+      if (!finalImg && id !== "") {
+        const existingStudent = students.find(s => s.id == id);
+        if (existingStudent) {
+          finalImg = existingStudent.img || "https://i.pravatar.cc/100";
+        }
+      }
+      if (!finalImg) {
+        finalImg = "https://i.pravatar.cc/100";
+      }
+
+      const payloadData = {
+        id: id ? id : Date.now(),
+        name: document.getElementById("input-name").value,
+        email: document.getElementById("input-email").value,
+        img: finalImg,
+        session: document.getElementById("input-session").value,
+        program: program,
+        year: document.getElementById("input-year").value,
+        batch: document.getElementById("input-batch").value,
+        roll: document.getElementById("input-roll").value,
+        guardian: document.getElementById("input-guardian").value,
+        guardianPhone: document.getElementById("input-guardian-phone").value,
+        address: document.getElementById("input-address").value,
+        phone: document.getElementById("input-phone").value,
+        contractFee: contractFee,
+        admissionFee: admissionFee,
+        tui1: tui1,
+        tui2: tui2,
+        tui3: tui3,
+        tui4: tui4,
+        tui5: tui5,
+        tui6: tui6,
+        otherFees: otherFees,
+        paidFee: 0,
+        status: document.getElementById("input-status").value
+      };
+
+      const isUpdate = id !== "";
+      const action = isUpdate ? "update" : "create";
+
+      if (isUpdate) {
+        const idx = students.findIndex(s => s.id == id);
+        if (idx !== -1) students[idx] = { ...students[idx], ...payloadData };
+      } else {
+        students.unshift(payloadData);
+      }
+
+      localStorage.setItem('erp_students', JSON.stringify(students));
+      renderTable();
+      closeModal("formModal");
+
+      // গুগল শিটে ডাটা সংরক্ষণ এবং সফলতার অ্যালার্ট প্রদান
+      fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: action, data: payloadData })
+      })
+      .then(() => {
+        alert(isUpdate ? "সফলভাবে শিক্ষার্থীর তথ্য আপডেট করা হয়েছে!" : "সফলভাবে নতুন শিক্ষার্থী যুক্ত করা হয়েছে!");
+        setTimeout(fetchStudentsFromSheet, 500);
+      })
+      .catch(err => {
+        console.error("গুগল শিটে সেভ করতে সমস্যা হয়েছে:", err);
+        alert("লোকাল স্টোরেজে সেভ হয়েছে, তবে গুগল শিটে আপডেট হতে সমস্যা হয়েছে!");
+      });
+    }
+
+    // ডিলিট অপারেশন (Delete)
+    document.getElementById("confirm-delete-btn").addEventListener("click", function() {
+      if (deleteId !== null) {
+        const idToDelete = deleteId;
+        students = students.filter(s => s.id != idToDelete);
+        localStorage.setItem('erp_students', JSON.stringify(students));
+        renderTable();
+        closeModal("deleteModal");
+
+        fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "delete", data: { id: idToDelete } })
+        })
+        .then(() => {
+          alert("সফলভাবে শিক্ষার্থীর তথ্য মুছে ফেলা হয়েছে!");
+          setTimeout(fetchStudentsFromSheet, 500);
+          deleteId = null;
+        })
+        .catch(err => console.error("গুগল শিট থেকে মুছতে সমস্যা হয়েছে:", err));
+      }
+    });
+
+    function getProcessedStudents() {
+      let filtered = students.filter(student => {
+        const matchesSearch = String(student.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              String(student.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              String(student.roll || '').includes(searchQuery);
+        
+        const matchesSession = selectedSession === "all" || student.session === selectedSession;
+        const matchesProgram = selectedProgram === "all" || student.program === selectedProgram;
+        const matchesBatch = selectedBatch === "all" || student.batch === selectedBatch;
+        const matchesYear = selectedYear === "all" || student.year === selectedYear;
+
+        return matchesSearch && matchesSession && matchesProgram && matchesBatch && matchesYear;
+      });
+
+      filtered.sort((a, b) => Number(a.roll) - Number(b.roll));
+      return filtered;
+    }
+
+    function renderTable() {
+      const processedData = getProcessedStudents();
+      const totalItems = processedData.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+      const pageData = processedData.slice(startIndex, endIndex);
+
+      const tbody = document.getElementById("student-table-body");
+      tbody.innerHTML = "";
+
+      if (pageData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; padding: 20px; color:#94a3b8;">কোনো তথ্য পাওয়া যায়নি!</td></tr>`;
+      } else {
+        pageData.forEach((student, index) => {
+          const serialNum = startIndex + index + 1;
+          const dueFee = Number(student.contractFee || 0) - Number(student.paidFee || 0);
+          const admissionFee = Number(student.admissionFee || 0);
+          
+          const paidAdmissionFee = invoices
+            .filter(inv => inv.studentId == student.id && (inv.feeType === "Admission Fee" || inv.feeType === "Fee"))
+            .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+            
+          const admDue = Math.max(0, admissionFee - paidAdmissionFee);
+          const paidFee = Number(student.paidFee || 0);
+
+          const studentInvoices = invoices.filter(inv => inv.studentId == student.id);
+
+          function getYearStats(yearName, fixedTui) {
+            let paidForYear = studentInvoices
+              .filter(inv => inv.year === yearName && (inv.feeType === "Tuition Fee" || inv.feeType === "Fee"))
+              .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+            let dueForYear = Math.max(0, fixedTui - paidForYear);
+            return { fixed: fixedTui, paid: paidForYear, due: dueForYear };
+          }
+
+          let y1 = getYearStats("1st Year", Number(student.tui1 || 0));
+          let y2 = getYearStats("2nd Year", Number(student.tui2 || 0));
+          let y3 = (student.tui3 > 0) ? getYearStats("3rd Year", Number(student.tui3 || 0)) : null;
+          let y4 = (student.tui4 > 0) ? getYearStats("4th Year", Number(student.tui4 || 0)) : null;
+
+          let tuitionSummary = `
+            <div class="fee-grid-box">
+              <div class="fee-grid-header">
+                <span>ইয়ার</span>
+                <span>নির্ধারিত</span>
+                <span>পরিশোধ</span>
+                <span>বকেয়া</span>
+              </div>
+              <div class="fee-grid-row">
+                <span class="fee-col-label">1st Yr</span>
+                <span>৳${y1.fixed}</span>
+                <span style="color:#16a34a">৳${y1.paid}</span>
+                <span style="color:#dc2626">৳${y1.due}</span>
+              </div>
+              <div class="fee-grid-row">
+                <span class="fee-col-label">2nd Yr</span>
+                <span>৳${y2.fixed}</span>
+                <span style="color:#16a34a">৳${y2.paid}</span>
+                <span style="color:#dc2626">৳${y2.due}</span>
+              </div>
+          `;
+          if (y3 && y3.fixed > 0) {
+            tuitionSummary += `
+              <div class="fee-grid-row">
+                <span class="fee-col-label">3rd Yr</span>
+                <span>৳${y3.fixed}</span>
+                <span style="color:#16a34a">৳${y3.paid}</span>
+                <span style="color:#dc2626">৳${y3.due}</span>
+              </div>
+            `;
+          }
+          if (y4 && y4.fixed > 0) {
+            tuitionSummary += `
+              <div class="fee-grid-row">
+                <span class="fee-col-label">4th Yr</span>
+                <span>৳${y4.fixed}</span>
+                <span style="color:#16a34a">৳${y4.paid}</span>
+                <span style="color:#dc2626">৳${y4.due}</span>
+              </div>
+            `;
+          }
+          tuitionSummary += `</div>`;
+
+          const excludedFeeTypes = ["Admission Form", "Admission Fee", "Tuition Fee", "Fee"];
+          let otherFeesInvoices = studentInvoices.filter(inv => !excludedFeeTypes.includes(inv.feeType));
+          
+          let otherFeesSummary = `<div class="fee-grid-box">`;
+          if (otherFeesInvoices.length === 0 && (!student.otherFees || student.otherFees == 0)) {
+            otherFeesSummary += `<div style="padding: 8px; text-align: center; color: #94a3b8; font-size: 11px;">কোনো অতিরিক্ত ফি নেই</div>`;
+          } else {
+            otherFeesSummary += `
+              <div class="fee-grid-header" style="grid-template-columns: 1fr 70px;">
+                <span>খাত (Fee Type)</span>
+                <span>পরিমাণ</span>
+              </div>
+            `;
+            if (student.otherFees && student.otherFees > 0) {
+              otherFeesSummary += `
+                <div class="fee-grid-row" style="grid-template-columns: 1fr 70px;">
+                  <span class="fee-col-label" style="font-size: 10px;">অন্যান্য ফি</span>
+                  <span style="color:#16a34a; font-weight: 700;">৳${Number(student.otherFees).toLocaleString()}</span>
+                </div>
+              `;
+            }
+            let feeMap = {};
+            otherFeesInvoices.forEach(inv => {
+              feeMap[inv.feeType] = (feeMap[inv.feeType] || 0) + Number(inv.amount || 0);
+            });
+            for (let [fType, fAmt] of Object.entries(feeMap)) {
+              otherFeesSummary += `
+                <div class="fee-grid-row" style="grid-template-columns: 1fr 70px;">
+                  <span class="fee-col-label" style="font-size: 10px;">${fType}</span>
+                  <span style="color:#16a34a; font-weight: 700;">৳${fAmt.toLocaleString()}</span>
+                </div>
+              `;
+            }
+          }
+          otherFeesSummary += `</div>`;
+          
+          const row = `
+            <tr>
+              <td><strong>${serialNum}</strong></td>
+              <td>
+                <div class="student-cell">
+                  <img src="${student.img || 'https://i.pravatar.cc/100'}" alt="Student">
+                  <div>
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-email">${student.email}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="background: #eef2ff; color: #4f46e5; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">${student.session}</span></td>
+              <td><div style="font-weight: 600; color: #0f172a;">${student.program}</div></td>
+              <td><span style="background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">${student.batch}</span></td>
+              <td><span style="background: #f0fdf4; color: #16a34a; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">${student.year}</span></td>
+              <td><strong>#${student.roll}</strong></td>
+              <td>${student.phone}</td>
+              <td>${student.guardianPhone || 'দেওয়া হয়নি'}</td>
+              <td>${student.address || 'দেওয়া হয়নি'}</td>
+              <td style="font-weight: 600; color: #2563eb;">৳ ${Number(student.contractFee || 0).toLocaleString()}</td>
+              <td style="color: #16a34a; font-weight: 600;">৳ ${paidFee.toLocaleString()}</td>
+              <td style="color: #dc2626; font-weight: 600;">৳ ${dueFee.toLocaleString()}</td>
+              <td>৳ ${admissionFee.toLocaleString()}</td>
+              <td style="color: #16a34a; font-weight: 600;">৳ ${paidAdmissionFee.toLocaleString()}</td>
+              <td style="color: #dc2626; font-weight: 600;">৳ ${admDue.toLocaleString()}</td>
+              <td style="min-width: 250px;">${tuitionSummary}</td>
+              <td style="min-width: 200px;">${otherFeesSummary}</td>
+              <td>
+                <span class="status-badge ${student.status === 'Active' ? 'status-active' : 'status-inactive'}">
+                  ${student.status === 'Active' ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                </span>
+              </td>
+              <td class="no-print">
+                <button class="action-btn btn-view" title="View & Print" onclick="openViewModal(${student.id}, ${serialNum})"><i class="fa fa-eye"></i></button>
+                <button class="action-btn btn-edit" title="Edit" onclick="openEditModal(${student.id})"><i class="fa fa-pen"></i></button>
+                <button class="action-btn btn-delete" title="Delete" onclick="openDeleteModal(${student.id})"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      }
+
+      document.getElementById("total-count").innerText = processedData.length;
+      document.getElementById("active-count").innerText = processedData.filter(s => s.status === "Active").length;
+
+      let sumContractFee = processedData.reduce((sum, s) => sum + Number(s.contractFee || 0), 0);
+      let sumDueFee = processedData.reduce((sum, s) => sum + (Number(s.contractFee || 0) - Number(s.paidFee || 0)), 0);
+
+      document.getElementById("total-contract-amount").innerText = "৳ " + sumContractFee.toLocaleString();
+      document.getElementById("total-due-amount").innerText = "৳ " + sumDueFee.toLocaleString();
+
+      renderPagination(totalItems, startIndex, endIndex, totalPages);
+    }
+
+    function renderPagination(totalItems, startIndex, endIndex, totalPages) {
+      const info = document.getElementById("paginationInfo");
+      info.innerText = totalItems > 0 
+        ? `দেখাচ্ছে ${startIndex + 1} - ${endIndex} (মোট ${totalItems} জন)`
+        : `দেখাচ্ছে 0 জন`;
+
+      const btnContainer = document.getElementById("paginationButtons");
+      btnContainer.innerHTML = "";
+
+      const prevBtn = document.createElement("button");
+      prevBtn.className = "page-btn";
+      prevBtn.innerHTML = `<i class="fa fa-chevron-left"></i>`;
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => { currentPage--; renderTable(); };
+      btnContainer.appendChild(prevBtn);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        pageBtn.innerText = i;
+        pageBtn.onclick = () => { currentPage = i; renderTable(); };
+        btnContainer.appendChild(pageBtn);
+      }
+
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "page-btn";
+      nextBtn.innerHTML = `<i class="fa fa-chevron-right"></i>`;
+      nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+      nextBtn.onclick = () => { currentPage++; renderTable(); };
+      btnContainer.appendChild(nextBtn);
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById("searchInput").value;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleSessionFilter() {
+      selectedSession = document.getElementById("sessionFilterSelect").value;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleProgramFilter() {
+      selectedProgram = document.getElementById("programFilterSelect").value;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleBatchFilter() {
+      selectedBatch = document.getElementById("batchFilterSelect").value;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleYearFilter() {
+      selectedYear = document.getElementById("yearFilterSelect").value;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleItemsPerPageChange() {
+      itemsPerPage = parseInt(document.getElementById("itemsPerPageSelect").value);
+      currentPage = 1;
+      renderTable();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add("active");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("active");
+    }
+
+    function openViewModal(id, sl) {
+      const data = students.find(s => s.id == id);
+      if (!data) return;
+      const dueFee = Number(data.contractFee || 0) - Number(data.paidFee || 0);
+
+      document.getElementById("view-img").src = data.img || "https://i.pravatar.cc/100";
+      document.getElementById("view-name").innerText = data.name;
+      document.getElementById("view-email").innerText = data.email;
+      document.getElementById("view-sl").innerText = sl;
+      document.getElementById("view-session").innerText = data.session;
+      document.getElementById("view-program").innerText = data.program;
+      document.getElementById("view-year").innerText = data.year;
+      document.getElementById("view-batch").innerText = data.batch;
+      document.getElementById("view-roll").innerText = "#" + data.roll;
+      document.getElementById("view-guardian").innerText = data.guardian;
+      document.getElementById("view-phone").innerText = data.phone;
+      document.getElementById("view-guardian-phone").innerText = data.guardianPhone || 'দেওয়া হয়নি';
+      document.getElementById("view-address").innerText = data.address || 'দেওয়া হয়নি';
+      document.getElementById("view-contract-fee").innerText = "৳ " + Number(data.contractFee || 0).toLocaleString();
+      document.getElementById("view-total-fee").innerText = "৳ " + Number(data.contractFee || 0).toLocaleString();
+      document.getElementById("view-paid-fee").innerText = "৳ " + Number(data.paidFee || 0).toLocaleString();
+      
+      document.getElementById("view-admission-fee").innerText = "৳ " + Number(data.admissionFee || 0).toLocaleString();
+      document.getElementById("view-tui-1").innerText = "৳ " + Number(data.tui1 || 0).toLocaleString();
+      document.getElementById("view-tui-2").innerText = "৳ " + Number(data.tui2 || 0).toLocaleString();
+      document.getElementById("view-tui-3").innerText = "৳ " + Number(data.tui3 || 0).toLocaleString();
+      
+      if (data.tui4 > 0) {
+        document.getElementById("view-tui-4").innerText = "৳ " + Number(data.tui4 || 0).toLocaleString();
+        document.getElementById("view-tui-4-container").style.display = "block";
+      } else {
+        document.getElementById("view-tui-4-container").style.display = "none";
+      }
+      
+      document.getElementById("view-due-fee").innerText = "৳ " + dueFee.toLocaleString();
+      openModal("viewModal");
+    }
+
+    function openEditModal(id) {
+      const data = students.find(s => s.id == id);
+      if (!data) return;
+      document.getElementById("form-title").innerText = "Edit Student Information";
+      document.getElementById("student-id").value = data.id;
+      document.getElementById("input-name").value = data.name;
+      document.getElementById("input-email").value = data.email;
+      document.getElementById("input-img-base64").value = data.img || "";
+      document.getElementById("image-preview").src = data.img || "https://i.pravatar.cc/100";
+      document.getElementById("input-img-file").value = "";
+      document.getElementById("input-session").value = data.session;
+      
+      const inputProgram = document.getElementById("input-program");
+      let foundProg = false;
+      for (let opt of inputProgram.options) {
+        if (opt.value === data.program) {
+          foundProg = true;
+          break;
+        }
+      }
+      if (!foundProg) {
+        const newOpt = document.createElement("option");
+        newOpt.value = data.program;
+        newOpt.innerText = data.program;
+        newOpt.setAttribute("data-years", 4);
+        inputProgram.appendChild(newOpt);
+      }
+
+      document.getElementById("input-program").value = data.program;
+      onProgramChange();
+
+      document.getElementById("input-year").value = data.year;
+      document.getElementById("input-batch").value = data.batch;
+      document.getElementById("input-roll").value = data.roll;
+      document.getElementById("input-guardian").value = data.guardian;
+      document.getElementById("input-guardian-phone").value = data.guardianPhone || "";
+      document.getElementById("input-address").value = data.address || "";
+      document.getElementById("input-phone").value = data.phone;
+      
+      document.getElementById("input-contract-fee").value = data.contractFee || 0;
+      document.getElementById("input-admission-fee").value = data.admissionFee || 0;
+      document.getElementById("input-tui-1").value = data.tui1 || 0;
+      document.getElementById("input-tui-2").value = data.tui2 || 0;
+      document.getElementById("input-tui-3").value = data.tui3 || 0;
+      document.getElementById("input-tui-4").value = data.tui4 || 0;
+      document.getElementById("input-tui-5").value = data.tui5 || 0;
+      document.getElementById("input-tui-6").value = data.tui6 || 0;
+      document.getElementById("input-other-fees").value = data.otherFees || 0;
+      document.getElementById("input-total-fee").value = data.contractFee || 0;
+
+      document.getElementById("input-status").value = data.status;
+      openModal("formModal");
+    }
+
+    function openAddModal() {
+      document.getElementById("form-title").innerText = "Add New Student";
+      document.getElementById("student-id").value = "";
+      document.getElementById("studentForm").reset();
+      document.getElementById("image-preview").src = "https://i.pravatar.cc/100";
+      document.getElementById("input-img-base64").value = "";
+      document.getElementById("input-total-fee").value = "0";
+      document.getElementById("input-other-fees").value = "0";
+      onProgramChange();
+      openModal("formModal");
+    }
+
+    function openDeleteModal(id) {
+      deleteId = id;
+      openModal("deleteModal");
+    }
+
+    function openMenu() {
+      document.getElementById("sidebar").classList.add("active");
+      document.getElementById("overlay").classList.add("show");
+    }
+
+    function closeMenu() {
+      document.getElementById("sidebar").classList.remove("active");
+      document.getElementById("overlay").classList.remove("show");
+    }
+
+    populateDropdowns();
+    fetchStudentsFromSheet();
+  </script>
+</body></html>
